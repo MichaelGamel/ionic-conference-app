@@ -1,4 +1,8 @@
-import { Component, OnInit, ViewEncapsulation, ApplicationRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 
@@ -15,8 +19,6 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Storage } from '@ionic/storage';
 
 import { UserData } from './providers/user-data';
-import { first } from 'rxjs/operators';
-import { interval, concat } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -59,16 +61,11 @@ export class AppComponent implements OnInit {
     private storage: Storage,
     private userData: UserData,
     private swUpdate: SwUpdate,
-    private toastCtrl: ToastController,
-    appRef: ApplicationRef
+    private toastCtrl: ToastController
   ) {
-    const appIsStable$ = appRef.isStable.pipe(
-      first(isStable => isStable === true)
-    );
-    const everySixHours$ = interval(5000);
-    const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
-
-    everySixHoursOnceAppIsStable$.subscribe(() => swUpdate.checkForUpdate());
+    setInterval(() => {
+      swUpdate.checkForUpdate();
+    }, 5000);
 
     this.initializeApp();
   }
